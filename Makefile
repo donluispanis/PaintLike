@@ -38,8 +38,8 @@ make_src:
 ################################################################################
 # Windows 
 ################################################################################
-all_windows: LDFLAGS += -L./lib -lglew32 -lopengl32 -lm -lmingw32 -lglfw3
-#all_windows: LDFLAGS += -L./lib/win -lIrrlicht -lopengl32 -lm -lfmod -lfmodstudio -lRakNetDLL -lmingw32 -lSDL2 -lglew32 -lassimp -lsfml-graphics-2 -lsfml-system-2 -lRedPanda
+all_windows: LDFLAGS += -L./lib -lopengl32 -lm -lmingw32 -lglfw3
+
 all_windows:
 	$(CXX) $(CXXFLAGS) $(addprefix $(BIN_PATH)$(OBJ_PATH),$(shell ls $(BIN_PATH)$(OBJ_PATH))) -o $(BIN_PATH)$(TARGET) $(LDFLAGS)
 
