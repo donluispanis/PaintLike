@@ -85,7 +85,13 @@ void PaintLike::Run()
         if (state == GLFW_PRESS){
             double x, y;
             glfwGetCursorPos(window, &x, &y);
-            std::cout << x << "  " << y << std::endl;
+
+            int sD = (height - y) * width * 3 + x * 3;
+            screenData[ sD ] = 255;
+            screenData[ sD + 1 ] = 255;
+            screenData[ sD + 2 ] = 255;
+
+            //std::cout << x << "  " << y << " " << std::endl;
         }
     }
 }
@@ -102,6 +108,6 @@ PaintLike::~PaintLike()
 //Drawing the screen
 void PaintLike::Draw()
 {
-    for (int i = 0; i < height * width * 3; i++)
-        screenData[i] = rand() % 256;
+    //for (int i = 0; i < height * width * 3; i++)
+    //    screenData[i] = rand() % 256;
 }
