@@ -1,6 +1,9 @@
 #pragma once
 
 #include <chrono>
+#include <vector>
+
+class Tool;
 class GLFWwindow;
 
 class PaintLike {
@@ -31,5 +34,7 @@ class PaintLike {
         float fDeltaTime;
 
         unsigned char frameCounter;
+
+        std::vector<Tool*> tools;
 
 };

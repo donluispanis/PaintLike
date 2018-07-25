@@ -2,6 +2,7 @@
 #include <iostream>
 #include <GLFW/glfw3.h>
 #include <string>
+#include "Tools.h"
 
 //Window and functionality initialization
 //Parameters: Witdh, Height
@@ -42,6 +43,8 @@ bool PaintLike::Init(int w, int h)
 
     std::cerr << "PaintLike has succesfully started\n";
 
+    tools.push_back(new Pencil("pencil"));
+
     return true;
 }
 
@@ -76,6 +79,13 @@ void PaintLike::Run()
         {
             std::string title = "PaintLike - FPS: " + std::to_string(1 / fDeltaTime);
             glfwSetWindowTitle(window, title.c_str());
+        }
+
+        int state = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT);
+        if (state == GLFW_PRESS){
+            double x, y;
+            glfwGetCursorPos(window, &x, &y);
+            std::cout << x << "  " << y << std::endl;
         }
     }
 }
