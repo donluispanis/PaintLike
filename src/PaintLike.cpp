@@ -1,6 +1,7 @@
 #include "PaintLike.h"
 #include <iostream>
 #include <GLFW/glfw3.h>
+#include <string>
 
 //Window and functionality initialization
 //Parameters: Witdh, Height
@@ -37,6 +38,8 @@ bool PaintLike::Init(int w, int h)
     clockOld = std::chrono::system_clock::now();
     clockNow = clockOld;
 
+    frameCounter = 0;
+
     std::cerr << "PaintLike has succesfully started\n";
 
     return true;
@@ -53,8 +56,9 @@ void PaintLike::Run()
         //Extract framerate
         clockOld = clockNow;
         clockNow = std::chrono::system_clock::now();
-        std::chrono::duration<float> elapsed_seconds = clockNow-clockOld;
+        std::chrono::duration<float> elapsed_seconds = clockNow - clockOld;
         fDeltaTime = elapsed_seconds.count();
+        frameCounter++;
 
         // Clear the screen
         glClear(GL_COLOR_BUFFER_BIT);
@@ -68,7 +72,11 @@ void PaintLike::Run()
         // Swap buffers
         glfwSwapBuffers(window);
 
-        std::cout << 1/fDeltaTime << std::endl;
+        if (frameCounter % 30 == 0)
+        {
+            std::string title = "PaintLike - FPS: " + std::to_string(1 / fDeltaTime);
+            glfwSetWindowTitle(window, title.c_str());
+        }
     }
 }
 

@@ -30,4 +30,6 @@ class PaintLike {
         std::chrono::system_clock::time_point clockNow;
         float fDeltaTime;
 
+        unsigned char frameCounter;
+
 };
