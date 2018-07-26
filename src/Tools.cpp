@@ -43,14 +43,14 @@ void Pencil::OnClick(const point_t p, Canvas &canvas)
                 {
                     drawPixel(aux, getColor(), canvas);
 
-                    int signX = (p.x - aux.x) >= 0 ? 1 : -1;
+                    int signX = (p.x - aux.x) >= 0 ? 1 : -1; //Calculate X direction
 
-                    aux.x += signX;
-                    acummulated += std::abs(slope);
+                    aux.x += signX; //Increment X
+                    acummulated += std::abs(slope); //When this reaches 1, we increment Y
 
                     if (acummulated >= 1.f)
                     {
-                        int signY = (p.y - aux.y) >= 0 ? 1 : -1;
+                        int signY = (p.y - aux.y) >= 0 ? 1 : -1;    //Calculate Y direction
                         aux.y += signY;
                         acummulated -= 1.f;
                     }
@@ -62,16 +62,16 @@ void Pencil::OnClick(const point_t p, Canvas &canvas)
                 //While we don't reach the desired pixel position
                 while (aux.x != p.x || aux.y != p.y) 
                 {
-                    drawPixel(aux, getColor(), canvas);
+                    drawPixel(aux, getColor(), canvas); 
 
-                    int signY = (p.y - aux.y) >= 0 ? 1 : -1;
+                    int signY = (p.y - aux.y) >= 0 ? 1 : -1; //Calculate X direction
 
-                    aux.y += signY;
-                    acummulated += 1 / std::abs(slope);
+                    aux.y += signY; //Increment Y
+                    acummulated += 1 / std::abs(slope); //When this reaches 1, we increment X
 
                     if (acummulated >= 1.f)
                     {
-                        int signX = (p.x - aux.x) >= 0 ? 1 : -1;
+                        int signX = (p.x - aux.x) >= 0 ? 1 : -1;    //Calculate X direction
                         aux.x += signX;
                         acummulated -= 1.f;
                     }
