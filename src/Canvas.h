@@ -1,38 +1,35 @@
 #pragma once
 
-class Canvas{
+class Canvas
+{
 
-    public: 
+  public:
+    //Constructor and destructor
+    Canvas(const int w, const int h);
+    ~Canvas();
 
-        //Constructor and destructor
-        Canvas(const int w, const int h);
-        ~Canvas();
+    //Public getters
+    int getWidth() { return width; }
+    int getHeight() { return height; }
+    unsigned char *getCanvasData() { return canvasData; }
 
-        //Public getters
-        int getWidth()      {   return width;       }
-        int getHeight()     {   return height;      }
-        unsigned char * getCanvasData() {   return canvasData;  }
+  private:
+    //Defines
+    static const int kMaxSize = 5000;
+    static const int kDefaultValue = 500;
 
+    //Position variables
+    int width;
+    int height;
+    int centerX;
+    int centerY;
 
-    private: 
+    //Color variables
+    float opacity;
+    float hue;
+    float saturation;
+    float value;
 
-        //Defines
-        static const int kMaxSize = 5000;
-        static const int kDefaultValue = 500;
-
-        //Position variables
-        int width;
-        int height;
-        int centerX;
-        int centerY;
-
-        //Color variables
-        float opacity;
-        float hue;
-        float saturation;
-        float value;
-
-        //Screen info
-        unsigned char *canvasData;
-
+    //Screen info
+    unsigned char *canvasData;
 };

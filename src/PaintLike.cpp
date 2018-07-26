@@ -159,13 +159,14 @@ void PaintLike::UpdateInput()
         double x, y;
         glfwGetCursorPos(window, &x, &y);
 
-        currentTool->OnClick(x, y, *currentCanvas);
+        currentTool->OnClick({(int)x, (int)y}, *currentCanvas);
     }
-    else if (state == GLFW_RELEASE){
+    else if (state == GLFW_RELEASE)
+    {
         double x, y;
         glfwGetCursorPos(window, &x, &y);
 
-        currentTool->OnRelease(x, y, *currentCanvas);
+        currentTool->OnRelease({(int)x, (int)y}, *currentCanvas);
     }
 }
 
@@ -188,7 +189,7 @@ void PaintLike::DrawAllCanvas()
         unsigned char *canvasData = canvas[i]->getCanvasData();
         for (int i = 0; i < width * height * 3; i += 3)
         {
-            int tmp = i + i / 3;                                     //Index correspondency between canvas data and screen data
+            int tmp = i + i / 3;                               //Index correspondency between canvas data and screen data
             float opacity = canvasData[tmp + 3] * 0.00392157f; //Same as dividing between 255
 
             screenData[i] = canvasData[tmp] * opacity;

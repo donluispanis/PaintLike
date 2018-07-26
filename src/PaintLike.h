@@ -7,66 +7,63 @@ class Tool;
 class Canvas;
 class GLFWwindow;
 
-class PaintLike {
+class PaintLike
+{
 
-    public:
+  public:
+    //Void Constructor and Destructor
+    PaintLike() {}
+    ~PaintLike();
 
-        //Void Constructor and Destructor
-        PaintLike() {}
-        ~PaintLike();
+    //Basic functions
+    bool Init(const int w, const int h);
 
-        //Basic functions
-        bool Init(const int w, const int h);
+    void Run();
 
-        void Run();
+  private:
+    //===============================================================================
+    // PRIVATE FUNCTIONS
+    //===============================================================================
+    void Draw();              //Default draw
+    void DrawAllCanvas();     //Draws all the canvases onto the screen
+    void DrawTopCanvas();     //Redraws top canvas
+    void DrawPartialCanvas(); //Redraws canvas partially
+    void DrawInterface();     //Draws interface
 
+    bool InitWindow(const int w, const int h); //Init window and openGL related stuff
+    bool InitEngine(const int w, const int h); //Init all paint related stuff
 
-    private: 
-        
-        //===============================================================================
-        // PRIVATE FUNCTIONS
-        //===============================================================================
-        void Draw();    //Default draw
-        void DrawAllCanvas(); //Draws all the canvases onto the screen
-        void DrawTopCanvas(); //Redraws top canvas
-        void DrawPartialCanvas(); //Redraws canvas partially
-        void DrawInterface();   //Draws interface    
+    void UpdateTime();  //Update engine delta time count
+    void UpdateInput(); //Update engine input
 
-        bool InitWindow(const int w, const int h);  //Init window and openGL related stuff
-        bool InitEngine(const int w, const int h);  //Init all paint related stuff
+    //===============================================================================
+    // WINDOW RELATED VARIABLES
+    //===============================================================================
 
-        void UpdateTime(); //Update engine delta time count
-        void UpdateInput(); //Update engine input
+    int height;
+    int width;
+    GLFWwindow *window;
+    unsigned char *screenData;
 
-        //===============================================================================
-        // WINDOW RELATED VARIABLES
-        //===============================================================================
+    //===============================================================================
+    // TIME RELATED VARIABLES
+    //===============================================================================
 
-        int height;
-        int width;
-        GLFWwindow *window;
-        unsigned char *screenData;
+    std::chrono::system_clock::time_point clockOld;
+    std::chrono::system_clock::time_point clockNow;
+    float fDeltaTime;
 
-        //===============================================================================
-        // TIME RELATED VARIABLES
-        //===============================================================================
+    unsigned char frameCounter;
 
-        std::chrono::system_clock::time_point clockOld;
-        std::chrono::system_clock::time_point clockNow;
-        float fDeltaTime;
+    //===============================================================================
+    // ENGINE RELATED VARIABLES
+    //===============================================================================
 
-        unsigned char frameCounter;
+    std::vector<Tool *> tools;
+    std::vector<Canvas *> canvas;
 
-        //===============================================================================
-        // ENGINE RELATED VARIABLES
-        //===============================================================================
+    Tool *currentTool;
+    Canvas *currentCanvas;
 
-        std::vector<Tool*> tools;
-        std::vector<Canvas*> canvas;
-
-        Tool* currentTool;
-        Canvas* currentCanvas;
-
-        float zoom;
-
+    float zoom;
 };
