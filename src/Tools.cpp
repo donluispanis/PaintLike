@@ -1,6 +1,7 @@
 #include "Tools.h"
 #include "Canvas.h"
 #include <iostream>
+#include <cmath>
 
 void Pencil::OnClick(const point_t p, Canvas &canvas)
 {
@@ -17,6 +18,7 @@ void Pencil::OnClick(const point_t p, Canvas &canvas)
 
     if (p.x >= 0 && p.x < canvas.getWidth() && p.y >= 0 && p.y < canvas.getHeight())
     {
+        //If its the first time we press, draw points and save press points
         if (!isPressed)
         {
             drawPixel(p, getColor(), canvas);
@@ -25,95 +27,58 @@ void Pencil::OnClick(const point_t p, Canvas &canvas)
 
             oldP = p;
         }
+        //If we continue pressing and move
         else if (p.x != oldP.x || p.y != oldP.y)
         {
-            point_t p1 = p;
-            float slope = (float)(p1.y - oldP.y) / (float)(p1.x - oldP.x);
-            float acummulated = 0.f;
-            point_t aux = oldP;
+            //Calculate the slope of the line to be drawn
+            float slope = (float)(p.y - oldP.y) / (float)(p.x - oldP.x);
+            float acummulated = 0.f;    //When this hits 1, we make 1 pixel increment
+            point_t aux = oldP; //auxiliar point that we will increment from the old point to the new one
 
-            //Ascending slope < 45º
-            if (slope <= 1.f && slope >= 0.f)
+            //Slope < 45º
+            if (std::abs(slope) <= 1.f && std::abs(slope) >= 0.f)
             {
-                while (aux.x != p1.x || aux.y != p1.y)
+                //While we don't reach the desired pixel position
+                while (aux.x != p.x || aux.y != p.y)
                 {
                     drawPixel(aux, getColor(), canvas);
 
-                    int signX = (p1.x - aux.x) >= 0 ? 1 : -1;
+                    int signX = (p.x - aux.x) >= 0 ? 1 : -1;
 
                     aux.x += signX;
-                    acummulated += slope;
+                    acummulated += std::abs(slope);
 
                     if (acummulated >= 1.f)
                     {
-                        int signY = (p1.y - aux.y) >= 0 ? 1 : -1;
+                        int signY = (p.y - aux.y) >= 0 ? 1 : -1;
                         aux.y += signY;
                         acummulated -= 1.f;
                     }
                 }
             }
-            //Ascending slope > 45º
-            else if (slope > 1.f)
+            //Slope > 45º
+            else if (std::abs(slope) > 1.f)
             {
-                while (aux.x != p1.x || aux.y != p1.y)
+                //While we don't reach the desired pixel position
+                while (aux.x != p.x || aux.y != p.y) 
                 {
                     drawPixel(aux, getColor(), canvas);
 
-                    int signY = (p1.y - aux.y) >= 0 ? 1 : -1;
+                    int signY = (p.y - aux.y) >= 0 ? 1 : -1;
 
                     aux.y += signY;
-                    acummulated += 1 / slope;
+                    acummulated += 1 / std::abs(slope);
 
                     if (acummulated >= 1.f)
                     {
-                        int signX = (p1.x - aux.x) >= 0 ? 1 : -1;
+                        int signX = (p.x - aux.x) >= 0 ? 1 : -1;
                         aux.x += signX;
                         acummulated -= 1.f;
                     }
                 }
             }
-            //Descending slope < 45º
-            else if (slope >= -1.f && slope < 0.f)
-            {
-                while (aux.x != p1.x || aux.y != p1.y)
-                {
-                    drawPixel(aux, getColor(), canvas);
 
-                    int signX = (p1.x - aux.x) >= 0 ? 1 : -1;
-
-                    aux.x += signX;
-                    acummulated += slope;
-
-                    if (acummulated <= -1.f)
-                    {
-                        int signY = (p1.y - aux.y) >= 0 ? 1 : -1;
-                        aux.y += signY;
-                        acummulated += 1.f;
-                    }
-                }
-            }
-            //Descending slope > 45º
-            else if (slope < -1.f)
-            {
-                while (aux.x != p1.x || aux.y != p1.y)
-                {
-                    drawPixel(aux, getColor(), canvas);
-
-                    int signY = (p1.y - aux.y) >= 0 ? 1 : -1;
-
-                    aux.y += signY;
-                    acummulated += 1 / slope;
-
-                    if (acummulated <= -1.f)
-                    {
-                        int signX = (p1.x - aux.x) >= 0 ? 1 : -1;
-                        aux.x += signX;
-                        acummulated += 1.f;
-                    }
-                }
-            }
-
-            oldP = p;
+            oldP = p;   //Update new point as old point
         }
     }
 }
