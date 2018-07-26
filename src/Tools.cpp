@@ -4,16 +4,22 @@
 
 void Pencil::OnClick(const point_t p, Canvas &canvas)
 {
+    //Lambda function for drawing pixels
+    auto drawPixel = [](const point_t &p, const color_t &c, Canvas &canvas) 
+    {
+        int sD = ((canvas.getHeight() - p.y) * canvas.getWidth() + p.x) * 4;
+
+        canvas.getCanvasData()[sD] = c.RGBA[0];
+        canvas.getCanvasData()[sD + 1] = c.RGBA[1];
+        canvas.getCanvasData()[sD + 2] = c.RGBA[2];
+        canvas.getCanvasData()[sD + 3] = c.RGBA[3];
+    };
+
     if (p.x >= 0 && p.x < canvas.getWidth() && p.y >= 0 && p.y < canvas.getHeight())
     {
         if (!isPressed)
         {
-            int sD = ((canvas.getHeight() - p.y) * canvas.getWidth() + p.x) * 4;
-
-            canvas.getCanvasData()[sD] = getColor().RGBA[0];
-            canvas.getCanvasData()[sD + 1] = getColor().RGBA[1];
-            canvas.getCanvasData()[sD + 2] = getColor().RGBA[2];
-            canvas.getCanvasData()[sD + 3] = getColor().RGBA[3];
+            drawPixel(p, getColor(), canvas);
 
             isPressed = true;
 
@@ -31,12 +37,7 @@ void Pencil::OnClick(const point_t p, Canvas &canvas)
             {
                 while (aux.x != p1.x || aux.y != p1.y)
                 {
-                    int sD = ((canvas.getHeight() - aux.y) * canvas.getWidth() + aux.x) * 4;
-
-                    canvas.getCanvasData()[sD] = getColor().RGBA[0];
-                    canvas.getCanvasData()[sD + 1] = getColor().RGBA[1];
-                    canvas.getCanvasData()[sD + 2] = getColor().RGBA[2];
-                    canvas.getCanvasData()[sD + 3] = getColor().RGBA[3];
+                    drawPixel(aux, getColor(), canvas);
 
                     int signX = (p1.x - aux.x) >= 0 ? 1 : -1;
 
@@ -56,12 +57,7 @@ void Pencil::OnClick(const point_t p, Canvas &canvas)
             {
                 while (aux.x != p1.x || aux.y != p1.y)
                 {
-                    int sD = ((canvas.getHeight() - aux.y) * canvas.getWidth() + aux.x) * 4;
-
-                    canvas.getCanvasData()[sD] = getColor().RGBA[0];
-                    canvas.getCanvasData()[sD + 1] = getColor().RGBA[1];
-                    canvas.getCanvasData()[sD + 2] = getColor().RGBA[2];
-                    canvas.getCanvasData()[sD + 3] = getColor().RGBA[3];
+                    drawPixel(aux, getColor(), canvas);
 
                     int signY = (p1.y - aux.y) >= 0 ? 1 : -1;
 
@@ -81,12 +77,7 @@ void Pencil::OnClick(const point_t p, Canvas &canvas)
             {
                 while (aux.x != p1.x || aux.y != p1.y)
                 {
-                    int sD = ((canvas.getHeight() - aux.y) * canvas.getWidth() + aux.x) * 4;
-
-                    canvas.getCanvasData()[sD] = getColor().RGBA[0];
-                    canvas.getCanvasData()[sD + 1] = getColor().RGBA[1];
-                    canvas.getCanvasData()[sD + 2] = getColor().RGBA[2];
-                    canvas.getCanvasData()[sD + 3] = getColor().RGBA[3];
+                    drawPixel(aux, getColor(), canvas);
 
                     int signX = (p1.x - aux.x) >= 0 ? 1 : -1;
 
@@ -106,12 +97,7 @@ void Pencil::OnClick(const point_t p, Canvas &canvas)
             {
                 while (aux.x != p1.x || aux.y != p1.y)
                 {
-                    int sD = ((canvas.getHeight() - aux.y) * canvas.getWidth() + aux.x) * 4;
-
-                    canvas.getCanvasData()[sD] = getColor().RGBA[0];
-                    canvas.getCanvasData()[sD + 1] = getColor().RGBA[1];
-                    canvas.getCanvasData()[sD + 2] = getColor().RGBA[2];
-                    canvas.getCanvasData()[sD + 3] = getColor().RGBA[3];
+                    drawPixel(aux, getColor(), canvas);
 
                     int signY = (p1.y - aux.y) >= 0 ? 1 : -1;
 
