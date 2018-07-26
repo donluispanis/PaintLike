@@ -18,7 +18,7 @@ class Tool
 
     union color_t {
       uint32_t color;
-      unsigned char RGBA[4];
+      unsigned char RGBA[4]; 
     };
 
     Tool(Tool::Type t) : type(t)

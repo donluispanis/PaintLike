@@ -188,8 +188,8 @@ void PaintLike::DrawAllCanvas()
         unsigned char *canvasData = canvas[i]->getCanvasData();
         for (int i = 0; i < width * height * 3; i += 3)
         {
-            float opacity = canvasData[i + i / 3 + 3] * 0.00392157f; //Same as dividing between 255
             int tmp = i + i / 3;                                     //Index correspondency between canvas data and screen data
+            float opacity = canvasData[tmp + 3] * 0.00392157f; //Same as dividing between 255
 
             screenData[i] = canvasData[tmp] * opacity;
             screenData[i + 1] = canvasData[tmp + 1] * opacity;
