@@ -1,30 +1,50 @@
 #pragma once
 
 #include <string>
+class Canvas;
 
 class Tool
 {
 
   public:
-    Tool(std::string n) : name(n)
+
+    enum class Type {
+      PENCIL,
+      PEN,
+      PEN_ROUND,
+      RECTANGLE,
+      CIRCLE
+    };
+
+    union color_t {
+      uint32_t color;
+      unsigned char RGBA[4];
+    };
+
+    Tool(Tool::Type t) : type(t)
     {
+      color.color = 0xFFFFFFFF;
     }
 
     virtual ~Tool()
     {
     }
 
-    virtual void OnClick(int x, int y) = 0;
+    virtual void OnClick(int x, int y, Canvas& canvas) = 0;
+    virtual void OnRelease(int x, int y, Canvas& canvas) = 0;
+
+    Tool::Type getType() {  return type;  }
+    color_t    getColor(){  return color; }
 
   private:
-    std::string name;
-    unsigned char color[4];
+    Tool::Type type;
+    color_t color;
 };
 
 class Pencil : public Tool
 {
   public:
-    Pencil(std::string n) : Tool(n)
+    Pencil() : Tool(Tool::Type::PENCIL), isPressed(false)
     {
     }
 
@@ -32,5 +52,9 @@ class Pencil : public Tool
     {
     }
 
-    virtual void OnClick(int x, int y) override;
+    virtual void OnClick(int x, int y, Canvas& canvas) override;
+    virtual void OnRelease(int x, int y, Canvas& canvas) override;
+
+  private: 
+    bool isPressed;
 };

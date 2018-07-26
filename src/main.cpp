@@ -4,7 +4,10 @@ int main()
 {
 
     PaintLike p;
-    p.Init(1280,720);
+
+    if(!p.Init(1280,720))
+        return -1;
+        
     p.Run();
 
     return 0;
