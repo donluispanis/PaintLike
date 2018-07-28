@@ -27,7 +27,7 @@ class PaintLike
     void Draw();              //Default draw
     void DrawAllCanvas();     //Draws all the canvases onto the screen
     void DrawTopCanvas();     //Redraws top canvas
-    void DrawPartialCanvas(); //Redraws canvas partially
+    void DrawPartialCanvas(const int x1, const int y1, const int x2, const int y2); //Redraws canvas partially
     void DrawInterface();     //Draws interface
 
     bool InitWindow(const int w, const int h); //Init window and openGL related stuff

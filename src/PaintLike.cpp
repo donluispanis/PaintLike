@@ -121,7 +121,11 @@ void PaintLike::Run()
         UpdateInput();
 
         //Perform drawing over the pixel matrix
-        Draw();
+        if (currentTool->isActive()){
+            DrawPartialCanvas(currentTool->getOldPoint().x, currentTool->getOldPoint().y, currentTool->getNewPoint().x, currentTool->getNewPoint().y);
+            DrawAllCanvas();
+        }
+            
 
         // Draw
         glDrawPixels(width, height, GL_RGB, GL_UNSIGNED_BYTE, screenData);
@@ -185,22 +189,57 @@ void PaintLike::Draw()
 //Draw all canvases ::=> Unfinished
 void PaintLike::DrawAllCanvas()
 {
+    int w = 0;
     for (int i = 0; i < canvas.size(); i++)
     {
         unsigned char *canvasData = canvas[i]->getCanvasData();
-        for (int i = 0; i < width * height * 3; i += 3)
+        for (int j = 0; j < width * height * 3; j += 3)
         {
-            int tmp = i + i / 3;                               //Index correspondency between canvas data and screen data
+            int tmp = j + j / 3;                               //Index correspondency between canvas data and screen data
             float opacity = canvasData[tmp + 3] * 0.00392157f; //Same as dividing between 255
 
-            screenData[i] = canvasData[tmp] * opacity;
-            screenData[i + 1] = canvasData[tmp + 1] * opacity;
-            screenData[i + 2] = canvasData[tmp + 2] * opacity;
+            screenData[j] = canvasData[tmp] * opacity;
+            screenData[j + 1] = canvasData[tmp + 1] * opacity;
+            screenData[j + 2] = canvasData[tmp + 2] * opacity;
+            w++;
         }
     }
+    std::cout << "DrawAll    : " << w << std::endl;
 }
 
 //Draws interface
 void PaintLike::DrawInterface()
 {
+}
+
+void PaintLike::DrawPartialCanvas(const int x1, const int y1, const int x2, const int y2)
+{
+
+    int maxY, minY, maxX, minX, w = 0;
+
+    maxY = (y1 > y2) ? y1 : y2;
+    minY = (y1 > y2) ? y2 : y1;
+    maxX = (x1 > x2) ? x1 : x2;
+    minX = (x1 > x2) ? x2 : x1;
+
+    for (int i = 0; i < canvas.size(); i++)
+    {
+        unsigned char *canvasData = canvas[i]->getCanvasData();
+        for (int y = canvas[i]->getHeight() - maxY - 1; y < canvas[i]->getHeight() - minY + 1; y++)
+        {
+            for (int x = minX - 1; x < maxX + 1; x++)
+            {
+                int z = (y * canvas[i]->getWidth() + x) * 3;
+
+                int tmp = z + z / 3;                               //Index correspondency between canvas data and screen data
+                float opacity = canvasData[tmp + 3] * 0.00392157f; //Same as dividing between 255
+
+                screenData[z] = canvasData[tmp] * opacity;
+                screenData[z + 1] = canvasData[tmp + 1] * opacity;
+                screenData[z + 2] = canvasData[tmp + 2] * opacity;
+                w++;
+            }
+        }
+    }
+    std::cout << "DrawPartial: " << w << std::endl;
 }
