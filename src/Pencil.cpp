@@ -35,6 +35,10 @@ void Pencil::OnClick(const point_t p, Canvas &canvas)
             float acummulated = 0.f; //When this hits 1, we make 1 pixel increment
             point_t aux = getNewPoint();      //auxiliar point that we will increment from the old point to the new one
 
+            
+            int signX = (p.x - aux.x) >= 0 ? 1 : -1; //Calculate X direction
+            int signY = (p.y - aux.y) >= 0 ? 1 : -1; //Calculate Y direction
+
             //Slope < 45º
             if (std::abs(slope) <= 1.f && std::abs(slope) >= 0.f)
             {
@@ -43,14 +47,13 @@ void Pencil::OnClick(const point_t p, Canvas &canvas)
                 {
                     drawPixel(aux, getColor(), canvas);
 
-                    int signX = (p.x - aux.x) >= 0 ? 1 : -1; //Calculate X direction
+                    if(aux.x != p.x)
+                        aux.x += signX;                 //Increment X until it reaches the target
 
-                    aux.x += signX;                 //Increment X
                     acummulated += std::abs(slope); //When this reaches 1, we increment Y
 
                     if (acummulated >= 1.f)
                     {
-                        int signY = (p.y - aux.y) >= 0 ? 1 : -1; //Calculate Y direction
                         aux.y += signY;
                         acummulated -= 1.f;
                     }
@@ -64,14 +67,13 @@ void Pencil::OnClick(const point_t p, Canvas &canvas)
                 {
                     drawPixel(aux, getColor(), canvas);
 
-                    int signY = (p.y - aux.y) >= 0 ? 1 : -1; //Calculate X direction
-
-                    aux.y += signY;                     //Increment Y
+                    if(aux.y != p.y)
+                        aux.y += signY;                     //Increment Y until it reaches the target
                     acummulated += 1 / std::abs(slope); //When this reaches 1, we increment X
 
                     if (acummulated >= 1.f)
                     {
-                        int signX = (p.x - aux.x) >= 0 ? 1 : -1; //Calculate X direction
+                        
                         aux.x += signX;
                         acummulated -= 1.f;
                     }
