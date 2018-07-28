@@ -4,6 +4,7 @@
 
 #include "PaintLike.h"
 #include "Tools.h"
+#include "Pencil.h"
 #include "Canvas.h"
 
 //===============================================================================
