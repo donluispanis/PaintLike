@@ -5,22 +5,13 @@
 
 void Pencil::OnClick(const point_t p, Canvas &canvas)
 {
-    //Lambda function for drawing pixels
-    auto drawPixel = [](const point_t &p, const color_t &c, Canvas &canvas) {
-        int sD = ((canvas.getHeight() - p.y) * canvas.getWidth() + p.x) * 4;
-
-        canvas.getCanvasData()[sD] = c.R;
-        canvas.getCanvasData()[sD + 1] = c.G;
-        canvas.getCanvasData()[sD + 2] = c.B;
-        canvas.getCanvasData()[sD + 3] = c.A;
-    };
 
     if (p.x >= 0 && p.x < canvas.getWidth() && p.y >= 0 && p.y < canvas.getHeight())
     {
         //If its the first time we press, draw points and save press points
         if (!isActive())
         {
-            drawPixel(p, getColor(), canvas);
+            DrawPencil(p, getColor(), canvas);
 
             setActive(true);
 
@@ -28,14 +19,13 @@ void Pencil::OnClick(const point_t p, Canvas &canvas)
             setNewPoint(p);
         }
         //If we continue pressing and move
-        else if (p.x != getNewPoint().x || p.y != getNewPoint().y)  //We use the new point before updating it, so it's the future old points
+        else if (p.x != getNewPoint().x || p.y != getNewPoint().y) //We use the new point before updating it, so it's the future old points
         {
             //Calculate the slope of the line to be drawn
             float slope = (float)(p.y - getNewPoint().y) / (float)(p.x - getNewPoint().x);
-            float acummulated = 0.f; //When this hits 1, we make 1 pixel increment
-            point_t aux = getNewPoint();      //auxiliar point that we will increment from the old point to the new one
+            float acummulated = 0.f;     //When this hits 1, we make 1 pixel increment
+            point_t aux = getNewPoint(); //auxiliar point that we will increment from the old point to the new one
 
-            
             int signX = (p.x - aux.x) >= 0 ? 1 : -1; //Calculate X direction
             int signY = (p.y - aux.y) >= 0 ? 1 : -1; //Calculate Y direction
 
@@ -45,10 +35,10 @@ void Pencil::OnClick(const point_t p, Canvas &canvas)
                 //While we don't reach the desired pixel position
                 while (aux.x != p.x || aux.y != p.y)
                 {
-                    drawPixel(aux, getColor(), canvas);
+                    DrawPencil(aux, getColor(), canvas);
 
-                    if(aux.x != p.x)
-                        aux.x += signX;                 //Increment X until it reaches the target
+                    if (aux.x != p.x)
+                        aux.x += signX; //Increment X until it reaches the target
 
                     acummulated += std::abs(slope); //When this reaches 1, we increment Y
 
@@ -65,15 +55,15 @@ void Pencil::OnClick(const point_t p, Canvas &canvas)
                 //While we don't reach the desired pixel position
                 while (aux.x != p.x || aux.y != p.y)
                 {
-                    drawPixel(aux, getColor(), canvas);
+                    DrawPencil(aux, getColor(), canvas);
 
-                    if(aux.y != p.y)
-                        aux.y += signY;                     //Increment Y until it reaches the target
+                    if (aux.y != p.y)
+                        aux.y += signY;                 //Increment Y until it reaches the target
                     acummulated += 1 / std::abs(slope); //When this reaches 1, we increment X
 
                     if (acummulated >= 1.f)
                     {
-                        
+
                         aux.x += signX;
                         acummulated -= 1.f;
                     }
@@ -89,4 +79,26 @@ void Pencil::OnClick(const point_t p, Canvas &canvas)
 void Pencil::OnRelease(const point_t p, Canvas &canvas)
 {
     setActive(false);
+}
+
+void Pencil::DrawPencil(const point_t &p, const color_t &c, Canvas &canvas)
+{
+    int sD;
+
+    auto random = [](const int dispersion) {
+        return rand() % dispersion - dispersion / 2;
+    };
+
+    for (unsigned int i = 0; i < size; i++)
+    {
+        if (i % 2) //If i % 2 == 1, then enter
+            sD = ((canvas.getHeight() - p.y - (i / 2 + i % 2) + random(dispersion)) * canvas.getWidth() + p.x + random(dispersion)) * 4;
+        else
+            sD = ((canvas.getHeight() - p.y + (i / 2) + random(dispersion)) * canvas.getWidth() + p.x + random(dispersion)) * 4;
+
+        canvas.getCanvasData()[sD] = c.R;
+        canvas.getCanvasData()[sD + 1] = c.G;
+        canvas.getCanvasData()[sD + 2] = c.B;
+        canvas.getCanvasData()[sD + 3] = c.A;
+    }
 }
