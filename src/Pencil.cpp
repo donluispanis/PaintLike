@@ -21,7 +21,43 @@ void Pencil::OnClick(const point_t p, Canvas &canvas)
         //If we continue pressing and move
         else if (p.x != getNewPoint().x || p.y != getNewPoint().y) //We use the new point before updating it, so it's the future old points
         {
-            //Calculate the slope of the line to be drawn
+            DrawLineBresenham(p, canvas);
+
+            setOldPoint(getNewPoint()); //Update new point as old point
+            setNewPoint(p);
+        }
+    }
+}
+
+void Pencil::OnRelease(const point_t p, Canvas &canvas)
+{
+    setActive(false);
+}
+
+void Pencil::DrawPencil(const point_t &p, const color_t &c, Canvas &canvas)
+{
+    int sD;
+
+    auto random = [](const int dispersion) {
+        return rand() % dispersion - dispersion / 2;
+    };
+
+    for (unsigned int i = 0; i < size; i++)
+    {
+        if (i % 2) //If i % 2 == 1, then enter
+            sD = ((canvas.getHeight() - p.y - (i / 2 + i % 2) + random(dispersion)) * canvas.getWidth() + p.x + random(dispersion)) * 4;
+        else
+            sD = ((canvas.getHeight() - p.y + (i / 2) + random(dispersion)) * canvas.getWidth() + p.x + random(dispersion)) * 4;
+
+        canvas.getCanvasData()[sD] = c.R;
+        canvas.getCanvasData()[sD + 1] = c.G;
+        canvas.getCanvasData()[sD + 2] = c.B;
+        canvas.getCanvasData()[sD + 3] = c.A;
+    }
+}
+
+void Pencil::DrawLineBresenham(const point_t &p, Canvas &canvas) {
+    //Calculate the slope of the line to be drawn
             float slope = (float)(p.y - getNewPoint().y) / (float)(p.x - getNewPoint().x);
             float acummulated = 0.f;     //When this hits 1, we make 1 pixel increment
             point_t aux = getNewPoint(); //auxiliar point that we will increment from the old point to the new one
@@ -69,36 +105,4 @@ void Pencil::OnClick(const point_t p, Canvas &canvas)
                     }
                 }
             }
-
-            setOldPoint(getNewPoint()); //Update new point as old point
-            setNewPoint(p);
-        }
-    }
-}
-
-void Pencil::OnRelease(const point_t p, Canvas &canvas)
-{
-    setActive(false);
-}
-
-void Pencil::DrawPencil(const point_t &p, const color_t &c, Canvas &canvas)
-{
-    int sD;
-
-    auto random = [](const int dispersion) {
-        return rand() % dispersion - dispersion / 2;
-    };
-
-    for (unsigned int i = 0; i < size; i++)
-    {
-        if (i % 2) //If i % 2 == 1, then enter
-            sD = ((canvas.getHeight() - p.y - (i / 2 + i % 2) + random(dispersion)) * canvas.getWidth() + p.x + random(dispersion)) * 4;
-        else
-            sD = ((canvas.getHeight() - p.y + (i / 2) + random(dispersion)) * canvas.getWidth() + p.x + random(dispersion)) * 4;
-
-        canvas.getCanvasData()[sD] = c.R;
-        canvas.getCanvasData()[sD + 1] = c.G;
-        canvas.getCanvasData()[sD + 2] = c.B;
-        canvas.getCanvasData()[sD + 3] = c.A;
-    }
 }

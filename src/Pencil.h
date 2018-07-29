@@ -21,6 +21,7 @@ class Pencil : public Tool
 
   private: 
     void DrawPencil(const point_t &p, const color_t &c, Canvas &canvas);
+    void DrawLineBresenham(const point_t &p, Canvas &canvas);
 
     unsigned int size;          //Size of the brush
     unsigned char dispersion;   //Dispersion of the brush
