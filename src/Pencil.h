@@ -5,7 +5,7 @@
 class Pencil : public Tool
 {
   public:
-    Pencil() : Tool(Tool::Type::PENCIL), size(1), dispersion(1)
+    Pencil() : Tool(Tool::Type::PENCIL), size(20), dispersion(20)
     {
     }
 
@@ -15,6 +15,9 @@ class Pencil : public Tool
 
     virtual void OnClick(const point_t p, Canvas &canvas) override;
     virtual void OnRelease(const point_t p, Canvas &canvas) override;
+
+    unsigned int getSize() { return size; }
+    unsigned char getDispersion() { return dispersion; }
 
   private: 
     void DrawPencil(const point_t &p, const color_t &c, Canvas &canvas);

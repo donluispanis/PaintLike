@@ -123,7 +123,7 @@ void PaintLike::Run()
         //Perform drawing over the pixel matrix
         if (currentTool->isActive()){
             DrawPartialCanvas(currentTool->getOldPoint().x, currentTool->getOldPoint().y, currentTool->getNewPoint().x, currentTool->getNewPoint().y);
-            DrawAllCanvas();
+            //DrawAllCanvas();
         }
             
 
@@ -222,12 +222,20 @@ void PaintLike::DrawPartialCanvas(const int x1, const int y1, const int x2, cons
     maxX = (x1 > x2) ? x1 : x2;
     minX = (x1 > x2) ? x2 : x1;
 
+    int max = 1;
+
+    if(currentTool->getType() == Tool::Type::PENCIL){
+        Pencil* pencil = (Pencil*)currentTool;
+        max = pencil->getSize() + pencil->getDispersion() / 2;
+    }
+    
+
     for (int i = 0; i < canvas.size(); i++)
     {
         unsigned char *canvasData = canvas[i]->getCanvasData();
-        for (int y = canvas[i]->getHeight() - maxY - 1; y < canvas[i]->getHeight() - minY + 1; y++)
+        for (int y = canvas[i]->getHeight() - maxY - max; y < canvas[i]->getHeight() - minY + max; y++)
         {
-            for (int x = minX - 1; x < maxX + 1; x++)
+            for (int x = minX - max; x < maxX + max; x++)
             {
                 int z = (y * canvas[i]->getWidth() + x) * 3;
 
