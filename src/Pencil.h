@@ -20,9 +20,9 @@ class Pencil : public Tool
     unsigned char getDispersion() { return dispersion; }
 
   private: 
-    void DrawPencil(const point_t &p, const color_t &c, Canvas &canvas);
-    void DrawLineBresenham(const point_t &p, Canvas &canvas);
+    void DrawPencil(const point_t &p, const color_t &c, Canvas &canvas);  //Draw at per pixel level
+    void DrawLineBresenham(const point_t &p, Canvas &canvas); //Draw a line using Bresenham's algorithym
 
     unsigned int size;          //Size of the brush
-    unsigned char dispersion;   //Dispersion of the brush
+    unsigned char dispersion;   //Dispersion of the brush (airbrush effect)
 };
