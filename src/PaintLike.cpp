@@ -7,6 +7,10 @@
 #include "Pencil.h"
 #include "Canvas.h"
 
+#ifdef _WIN32
+#include <Windows.h>
+#include <WinUser.h>
+#endif
 //===============================================================================
 // ENGINE INITIALIZATION
 //===============================================================================
@@ -44,13 +48,15 @@ bool PaintLike::InitWindow(const int w, const int h)
         return false;
     }
 
-    #ifdef _WIN32_
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3); // We want OpenGL 3.1, since it's the last one providing glDrawPixels
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
-    #else
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3); // We want OpenGL 3.0, since it's the last one providing glDrawPixels
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
-    #endif
+#ifdef _WIN32
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3); // We want OpenGL 3.1, since it's the last one providing glDrawPixels
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+#else
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3); // We want OpenGL 3.0, since it's the last one providing glDrawPixels
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+#endif
+
+    glfwWindowHint(GLFW_DECORATED, 0);
 
     // Open a window and create its OpenGL context
     window = glfwCreateWindow(w, h, "PaintLike", NULL, NULL);
@@ -64,7 +70,22 @@ bool PaintLike::InitWindow(const int w, const int h)
     glfwMakeContextCurrent(window);
     glfwSwapInterval(0);
 
+    const GLFWvidmode *videomode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+    glfwSetWindowPos(window, videomode->width / 2 - w / 2, videomode->height / 2 - h / 2);
+
     glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
+
+    RECT rect;
+    const char *name = "Shell_traywnd";
+    HWND taskBar = FindWindow(name, NULL);
+    if (taskBar && GetWindowRect(taskBar, &rect))
+    {
+        std::cout << "WINDOWS TASKBAR SIZE: bottom - " << rect.bottom << ", top - " << rect.top << ", size: " << rect.bottom - rect.top << std::endl;
+    }
+    else
+    {
+        std::cout << ":(" << std::endl;
+    }
 
     return true;
 }
@@ -127,11 +148,11 @@ void PaintLike::Run()
         UpdateInput();
 
         //Perform drawing over the pixel matrix
-        if (currentTool->isActive()){
+        if (currentTool->isActive())
+        {
             DrawPartialCanvas(currentTool->getOldPoint().x, currentTool->getOldPoint().y, currentTool->getNewPoint().x, currentTool->getNewPoint().y);
             //DrawAllCanvas();
         }
-            
 
         // Draw
         glDrawPixels(width, height, GL_RGB, GL_UNSIGNED_BYTE, screenData);
@@ -179,6 +200,12 @@ void PaintLike::UpdateInput()
         glfwGetCursorPos(window, &x, &y);
 
         currentTool->OnRelease({(int)x, (int)y}, *currentCanvas);
+    }
+
+    state = glfwGetKey(window, GLFW_KEY_ESCAPE);
+    if (state == GLFW_PRESS)
+    {
+        glfwSetWindowShouldClose(window, 1);
     }
 }
 
@@ -231,11 +258,11 @@ void PaintLike::DrawPartialCanvas(const int x1, const int y1, const int x2, cons
 
     int max = 1;
 
-    if(currentTool->getType() == Tool::Type::PENCIL){
-        Pencil* pencil = (Pencil*)currentTool;
+    if (currentTool->getType() == Tool::Type::PENCIL)
+    {
+        Pencil *pencil = (Pencil *)currentTool;
         max = pencil->getSize() + pencil->getDispersion() / 2;
     }
-    
 
     for (int i = 0; i < canvas.size(); i++)
     {
