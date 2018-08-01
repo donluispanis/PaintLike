@@ -41,7 +41,7 @@ make_src:
 ################################################################################
 # Windows 
 ################################################################################
-all_windows: LDFLAGS += -L./lib -lopengl32 -lm -lmingw32 -lglfw3
+all_windows: LDFLAGS += -L./lib/win -lopengl32 -lm -lmingw32 -lglfw3
 
 all_windows:
 	$(CXX) $(CXXFLAGS) $(addprefix $(BIN_PATH)$(OBJ_PATH),$(shell ls $(BIN_PATH)$(OBJ_PATH))) -o $(BIN_PATH)$(TARGET) $(LDFLAGS)
@@ -49,7 +49,7 @@ all_windows:
 ################################################################################
 # Linux
 ################################################################################
-all_linux: LDFLAGS += -lGL -lglfw
+all_linux: LDFLAGS += -L./lib/linux -lGL -lglfw -Wl,-rpath=./lib/linux
 
 all_linux:
 	$(CXX) $(CXXFLAGS) $(addprefix $(BIN_PATH)$(OBJ_PATH),$(shell ls $(BIN_PATH)$(OBJ_PATH))) -o $(BIN_PATH)$(TARGET) $(LDFLAGS)
