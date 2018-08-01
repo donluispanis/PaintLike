@@ -44,8 +44,13 @@ bool PaintLike::InitWindow(const int w, const int h)
         return false;
     }
 
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3); // We want OpenGL 3.1, since it's the last one providing glDrawPixels
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+    #ifdef _WIN32_
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3); // We want OpenGL 3.1, since it's the last one providing glDrawPixels
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+    #else
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3); // We want OpenGL 3.0, since it's the last one providing glDrawPixels
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+    #endif
 
     // Open a window and create its OpenGL context
     window = glfwCreateWindow(w, h, "PaintLike", NULL, NULL);
@@ -57,6 +62,7 @@ bool PaintLike::InitWindow(const int w, const int h)
     }
 
     glfwMakeContextCurrent(window);
+    glfwSwapInterval(0);
 
     glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
 
@@ -77,7 +83,7 @@ bool PaintLike::InitEngine(const int w, const int h)
     clockOld = std::chrono::system_clock::now();
     clockNow = clockOld;
 
-    frameCounter = 0;
+    timeCounter = 0.0f;
 
     //Initialize tools and canvses
     tools.push_back(new Pencil());
@@ -143,12 +149,13 @@ void PaintLike::UpdateTime()
     clockNow = std::chrono::system_clock::now();
     std::chrono::duration<float> elapsed_seconds = clockNow - clockOld;
     fDeltaTime = elapsed_seconds.count();
-    frameCounter++;
+    timeCounter += fDeltaTime;
 
-    if (frameCounter % 30 == 0)
+    if (timeCounter > 0.5f)
     {
         std::string title = "PaintLike - FPS: " + std::to_string(1 / fDeltaTime);
         glfwSetWindowTitle(window, title.c_str());
+        timeCounter = 0.0f;
     }
 }
 

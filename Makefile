@@ -17,8 +17,11 @@ endif
 # Instruction to create directories
 MKDIR_P = mkdir -p
 
-#default target is Linux
+#default target is Window
 all: create_dir make_src all_windows
+	$(warning Linking done!)
+
+linux: create_dir make_src all_linux
 	$(warning Linking done!)
 
 create_dir: make_bin_dir make_obj_dir
@@ -41,6 +44,14 @@ make_src:
 all_windows: LDFLAGS += -L./lib -lopengl32 -lm -lmingw32 -lglfw3
 
 all_windows:
+	$(CXX) $(CXXFLAGS) $(addprefix $(BIN_PATH)$(OBJ_PATH),$(shell ls $(BIN_PATH)$(OBJ_PATH))) -o $(BIN_PATH)$(TARGET) $(LDFLAGS)
+
+################################################################################
+# Linux
+################################################################################
+all_linux: LDFLAGS += -lGL -lglfw
+
+all_linux:
 	$(CXX) $(CXXFLAGS) $(addprefix $(BIN_PATH)$(OBJ_PATH),$(shell ls $(BIN_PATH)$(OBJ_PATH))) -o $(BIN_PATH)$(TARGET) $(LDFLAGS)
 
 clean:
