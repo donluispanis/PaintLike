@@ -30,6 +30,11 @@ class Canvas
     float saturation;
     float value;
 
+    //Rendering variables
+    float zoom;
+    int offsetX;
+    int offsetY;
+
     //Screen info
     unsigned char *canvasData;
 };

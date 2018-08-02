@@ -6,6 +6,7 @@
 #include "Tools.h"
 #include "Pencil.h"
 #include "Canvas.h"
+#include "Utils.h"
 
 #ifdef _WIN32
 #include <Windows.h>
@@ -81,6 +82,9 @@ bool PaintLike::InitWindow(const int w, const int h)
     if (taskBar && GetWindowRect(taskBar, &rect))
     {
         std::cout << "WINDOWS TASKBAR SIZE: bottom - " << rect.bottom << ", top - " << rect.top << ", size: " << rect.bottom - rect.top << std::endl;
+        const GLFWvidmode *videomode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+        glfwSetWindowPos(window, 0, 0);
+        glfwSetWindowSize(window, videomode->width, videomode->height - (rect.bottom - rect.top));
     }
     else
     {
@@ -112,6 +116,10 @@ bool PaintLike::InitEngine(const int w, const int h)
 
     currentTool = tools[0];
     currentCanvas = canvas[0];
+
+    //To remove later on
+    U::drawRectangle(*currentCanvas, {40, 50},{300, 400}, 10, 0, {120,120,120,255}, {255,120,120,255});
+    DrawAllCanvas();
 
     return true;
 }

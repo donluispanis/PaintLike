@@ -1,9 +1,12 @@
 #include "Pencil.h"
 #include "Canvas.h"
+#include "Maths.h"
+#include "Utils.h"
+
 #include <iostream>
 #include <cmath>
 
-void Pencil::OnClick(const point_t p, Canvas &canvas)
+void Pencil::OnClick(const M::point_t p, Canvas &canvas)
 {
 
     if (p.x >= 0 && p.x < canvas.getWidth() && p.y >= 0 && p.y < canvas.getHeight())
@@ -29,12 +32,12 @@ void Pencil::OnClick(const point_t p, Canvas &canvas)
     }
 }
 
-void Pencil::OnRelease(const point_t p, Canvas &canvas)
+void Pencil::OnRelease(const M::point_t p, Canvas &canvas)
 {
     setActive(false);
 }
 
-void Pencil::DrawPencil(const point_t &p, const color_t &c, Canvas &canvas)
+void Pencil::DrawPencil(const M::point_t &p, const U::color_t &c, Canvas &canvas)
 {
     int sD;
 
@@ -56,11 +59,11 @@ void Pencil::DrawPencil(const point_t &p, const color_t &c, Canvas &canvas)
     }
 }
 
-void Pencil::DrawLineBresenham(const point_t &p, Canvas &canvas) {
+void Pencil::DrawLineBresenham(const M::point_t &p, Canvas &canvas) {
     //Calculate the slope of the line to be drawn
             float slope = (float)(p.y - getNewPoint().y) / (float)(p.x - getNewPoint().x);
             float acummulated = 0.f;     //When this hits 1, we make 1 pixel increment
-            point_t aux = getNewPoint(); //auxiliar point that we will increment from the old point to the new one
+            M::point_t aux = getNewPoint(); //auxiliar point that we will increment from the old point to the new one
 
             int signX = (p.x - aux.x) >= 0 ? 1 : -1; //Calculate X direction
             int signY = (p.y - aux.y) >= 0 ? 1 : -1; //Calculate Y direction
