@@ -2,10 +2,10 @@
 #include "Canvas.h"
 
 #include <algorithm>
+#include <cmath>
 
-#include <iostream>
 //Draws a rectangle given some parameters
-void U::drawRectangle(Canvas &c, M::point_t p1, M::point_t p2, const int borderSize, const int borderRadius, const color_t innerC, const color_t outerC)
+void U::drawRectangle(Canvas &c, point_t p1, point_t p2, const int borderSize, const int borderRadius, const color_t innerC, const color_t outerC)
 {
     //Check if both points are outside the rectangle, and if they do, exit
     if ((p1.x < 0 && p2.x < 0) || (p1.x >= c.getWidth() && p2.x >= c.getWidth()) ||
@@ -17,22 +17,24 @@ void U::drawRectangle(Canvas &c, M::point_t p1, M::point_t p2, const int borderS
     int cH = c.getHeight();
     unsigned char *cData = c.getCanvasData();
 
+    //Order points in order to get left up and right down corner
+    orderPoints(p1, p2);
+
+    //Calculate the absolute value the points are offscreen
+    int offX1 = (p1.x >= 0) ? 0 : -p1.x;
+    int offY1 = (p1.y >= 0) ? 0 : -p1.y;
+    int offX2 = (p2.x < cW) ? 0 : p2.x - cW;
+    int offY2 = (p2.y < cH) ? 0 : p2.y - cH;
+
     //If some coordinate is ouside the rectangle, clamp it
     clampPoint(p1, cW, cH);
     clampPoint(p2, cW, cH);
 
-    //Order points in order to get left up and right down corner
-    M::point_t minP, maxP;
-    minP.x = std::min(p1.x, p2.x);
-    minP.y = std::min(p1.y, p2.y);
-    maxP.x = std::max(p1.x, p2.x);
-    maxP.y = std::max(p1.y, p2.y);
-
     //Clamp again point values taking border size in account, and invert Y
-    int minX = std::max(0, minP.x - (borderSize / 2 + borderSize % 2));
-    int minY = std::max(0, cH - maxP.y - (borderSize / 2 + borderSize % 2));
-    int maxX = std::min(cW, maxP.x + (borderSize / 2 + borderSize % 2));
-    int maxY = std::min(cH, cH - minP.y + (borderSize / 2 + borderSize % 2));
+    int minX = std::max(0, p1.x - (borderSize / 2 + borderSize % 2));
+    int minY = std::max(0, cH - p2.y - (borderSize / 2 + borderSize % 2));
+    int maxX = std::min(cW, p2.x + (borderSize / 2 + borderSize % 2));
+    int maxY = std::min(cH, cH - p1.y + (borderSize / 2 + borderSize % 2));
 
     //Draw rectangle
     for (int y = minY; y < maxY; y++)
@@ -42,7 +44,7 @@ void U::drawRectangle(Canvas &c, M::point_t p1, M::point_t p2, const int borderS
             int pos = (y * cW + x) * 4;
 
             //Draw border
-            if (x < minX + borderSize || y < minY + borderSize || x > maxX - borderSize - 1 || y > maxY - borderSize - 1)
+            if (x < minX + borderSize - offX1 || y < minY + borderSize - offY2 || x > maxX - borderSize - 1 + offX2 || y > maxY - borderSize - 1 - offY1)
             {
                 paintWithColorBlending(cData + pos, outerC);
             }
@@ -55,18 +57,57 @@ void U::drawRectangle(Canvas &c, M::point_t p1, M::point_t p2, const int borderS
     }
 }
 
-void U::drawCircle(Canvas &c, M::point_t p1, const int radius, const int borderSize, const color_t innerC, const color_t outerC) {}
+//Draws a circle with antialising, based on https://en.wikipedia.org/wiki/Midpoint_circle_algorithm
+void U::drawCircle(Canvas &c, point_t p, const int radius, const int borderSize, const color_t innerC, const color_t outerC)
+{
+    auto drawPixel = [](Canvas& c, const color_t color, const point_t &p) {
+        int pos = ((c.getHeight() - p.y) * c.getWidth() + p.x) * 4;
+        U::paintWithColorBlending(c.getCanvasData() + pos, color);
+    };
 
-void U::drawShape(Canvas &c, std::vector<std::pair<M::point_t, M::point_t>> coords, const int borderSize, const color_t innerC, const color_t outerC) {}
+    int x = radius-1-borderSize, y = 0;
+    int dx = 1, dy = 1;
+    int err = dx - (radius << 1);
 
-void U::drawLine(Canvas &c, M::point_t p1, M::point_t p2, const int borderSize, const color_t color) {}
+    //lineFrom(x0 - x, y0 + y, x0 + x, y0 + y);
 
-void U::drawSpline(Canvas &c, M::point_t p1, M::point_t p2, const M::point_t p3, const int borderSize, const color_t color) {}
+    while (x >= y)
+    {
+        drawPixel(c, outerC, {p.x + x, p.y + y});
+        drawPixel(c, outerC, {p.x + y, p.y + x});
+        drawPixel(c, outerC, {p.x - y, p.y + x});
+        drawPixel(c, outerC, {p.x - x, p.y + y});
+        drawPixel(c, outerC, {p.x - x, p.y - y});
+        drawPixel(c, outerC, {p.x - y, p.y - x});
+        drawPixel(c, outerC, {p.x + y, p.y - x});
+        drawPixel(c, outerC, {p.x + x, p.y - y});
 
-void U::drawGradient(Canvas &c, M::point_t p1, M::point_t p2, M::point_t dirVec, const color_t innerC, const color_t outerC) {}
+        if (err <= 0)
+        {
+            y++;
+            err += dy;
+            dy += 2;
+        }
+        
+        if (err > 0)
+        {
+            x--;
+            dx += 2;
+            err += dx - (radius << 1);
+        }
+    }
+}
+
+void U::drawShape(Canvas &c, std::vector<std::pair<point_t, point_t>> coords, const int borderSize, const color_t innerC, const color_t outerC) {}
+
+void U::drawLine(Canvas &c, point_t p1, point_t p2, const int borderSize, const color_t color) {}
+
+void U::drawSpline(Canvas &c, point_t p1, point_t p2, const point_t p3, const int borderSize, const color_t color) {}
+
+void U::drawGradient(Canvas &c, point_t p1, point_t p2, point_t dirVec, const color_t innerC, const color_t outerC) {}
 
 //Clamp a point between 0 and max witdh and height
-void U::clampPoint(M::point_t &p, int w, int h)
+void U::clampPoint(point_t &p, int w, int h)
 {
     if (p.x < 0)
         p.x = 0;
@@ -77,6 +118,21 @@ void U::clampPoint(M::point_t &p, int w, int h)
     if (p.y >= h)
         p.y = h - 1;
 }
+
+//Orders points in order to get left up and right down corner
+void U::orderPoints(point_t &p1, point_t &p2)
+{
+    int aux;
+
+    aux = std::min(p1.x, p2.x);
+    p2.x = std::max(p1.x, p2.x);
+    p1.x = aux;
+
+    aux = std::min(p1.y, p2.y);
+    p2.y = std::max(p1.y, p2.y);
+    p1.y = aux;
+}
+
 //Paint the correspondent pixel with the corresponding alpha blending
 //Formula found in https://en.wikipedia.org/wiki/Alpha_compositing
 void U::paintWithColorBlending(unsigned char *cData, const color_t c)

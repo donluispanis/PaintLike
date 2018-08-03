@@ -121,6 +121,21 @@ bool PaintLike::InitEngine(const int w, const int h)
     U::drawRectangle(*currentCanvas, {100, 100},{400, 400}, 10, 0, {255,0,0,125}, {255,0,0,125});
     U::drawRectangle(*currentCanvas, {600, 100},{300, 400}, 10, 0, {0,0,255,125}, {0,0,255,125});
     U::drawRectangle(*currentCanvas, {200, 300},{500, 600}, 10, 0, {0,255,0,125}, {0,255,0,125});
+    U::drawRectangle(*currentCanvas, {800, 800},{5000, 6000}, 100, 0, {0,255,0,255}, {255,0,0,255});
+
+    for(int i = 1; i < 400; i+=3){
+        U::drawCircle(*currentCanvas, {1200, 450}, i, 10, {255,255,255,255}, {255,255,255,255});
+    }
+
+    //U::drawCircle(*currentCanvas, {1200, 450}, 1, 10, {255,255,255,255}, {255,255,255,255});
+    //U::drawCircle(*currentCanvas, {1200, 450}, 3, 10, {255,255,255,255}, {255,255,255,255});
+    //U::drawCircle(*currentCanvas, {1200, 450}, 6, 10, {255,255,255,255}, {255,255,255,255});
+    //U::drawCircle(*currentCanvas, {1200, 450}, 12, 10, {255,255,255,255}, {255,255,255,255});
+    //U::drawCircle(*currentCanvas, {1200, 450}, 25, 10, {255,255,255,255}, {255,255,255,255});
+    //U::drawCircle(*currentCanvas, {1200, 450}, 50, 10, {255,255,255,255}, {255,255,255,255});
+    //U::drawCircle(*currentCanvas, {1200, 450}, 100, 10, {255,255,255,255}, {255,255,255,255});
+    //U::drawCircle(*currentCanvas, {1200, 450}, 200, 10, {255,255,255,255}, {255,255,255,255});
+    //U::drawCircle(*currentCanvas, {1200, 450}, 400, 10, {255,255,255,255}, {255,255,255,255});
     DrawAllCanvas();
 
     return true;
