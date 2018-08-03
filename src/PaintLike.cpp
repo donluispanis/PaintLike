@@ -7,7 +7,7 @@
 #include "Pencil.h"
 #include "Canvas.h"
 #include "Utils.h"
-#include <cmath>
+
 #ifdef _WIN32
 #include <Windows.h>
 #include <WinUser.h>
@@ -121,31 +121,6 @@ bool PaintLike::InitEngine(const int w, const int h)
     U::drawRectangle(*currentCanvas, {40, 50},{3000, 4000}, 10, 0, {120,120,120,255}, {255,120,120,255});
     DrawAllCanvas();
 
-    clockOld = clockNow;
-    clockNow = std::chrono::system_clock::now();
-    std::chrono::duration<float> elapsed_seconds = clockNow - clockOld;
-    fDeltaTime = elapsed_seconds.count();
-    for(int i = 0; i < 10; i++){
-    for(float i = -100.f; i < 100.1f; i+= 0.00001) {
-        cos(i);
-        sin(i);
-    }
-    clockOld = clockNow;
-    clockNow = std::chrono::system_clock::now();
-    elapsed_seconds = clockNow - clockOld;
-    fDeltaTime = elapsed_seconds.count();
-    std::cout << "C: " << fDeltaTime << std::endl;
-    for(float i = -100.f; i < 100.1f; i+= 0.00001) {
-        M::cos(i);
-        M::sin(i);
-    }
-    clockOld = clockNow;
-    clockNow = std::chrono::system_clock::now();
-    elapsed_seconds = clockNow - clockOld;
-    fDeltaTime = elapsed_seconds.count();
-    std::cout << "M: " << fDeltaTime << std::endl;
-
-    }
     return true;
 }
 
