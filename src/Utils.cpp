@@ -57,44 +57,62 @@ void U::drawRectangle(Canvas &c, point_t p1, point_t p2, const int borderSize, c
     }
 }
 
-//Draws a circle with antialising, based on https://en.wikipedia.org/wiki/Midpoint_circle_algorithm
+//Draws a circle with antialising
 void U::drawCircle(Canvas &c, point_t p, const int radius, const int borderSize, const color_t innerC, const color_t outerC)
 {
-    auto drawPixel = [](Canvas& c, const color_t color, const point_t &p) {
+    //lineFrom(x0 - x, y0 + y, x0 + x, y0 + y);
+}
+
+//Draws only a circle outline
+void U::drawCircleOutline(Canvas &c, point_t p, const int radius, const color_t color)
+{
+    //Lambda function to help us painting
+    auto drawPixel = [](Canvas &c, const color_t color, const point_t &p) {
         int pos = ((c.getHeight() - p.y) * c.getWidth() + p.x) * 4;
         U::paintWithColorBlending(c.getCanvasData() + pos, color);
     };
 
-    int x = radius-1-borderSize, y = 0;
-    int dx = 1, dy = 1;
-    int err = dx - (radius << 1);
+    float increment = 1 / (float)radius;    //For a correct circle to be drawn, we need to know how fast we increment
+    int x, y;
+    float fx, fy;
 
-    //lineFrom(x0 - x, y0 + y, x0 + x, y0 + y);
-
-    while (x >= y)
+    for (float i = 0; i < 0.785398163f; i += increment)
     {
-        drawPixel(c, outerC, {p.x + x, p.y + y});
-        drawPixel(c, outerC, {p.x + y, p.y + x});
-        drawPixel(c, outerC, {p.x - y, p.y + x});
-        drawPixel(c, outerC, {p.x - x, p.y + y});
-        drawPixel(c, outerC, {p.x - x, p.y - y});
-        drawPixel(c, outerC, {p.x - y, p.y - x});
-        drawPixel(c, outerC, {p.x + y, p.y - x});
-        drawPixel(c, outerC, {p.x + x, p.y - y});
+        fx = cos(i) * radius;   //Calculate x deviation value
+        fy = sin(i) * radius;   //Calculate y deviation value
+        x = fx; //Clamp to an integer value
+        y = fy; //Clamp to an integer value
+        fx -= x;    //Obtain a value between 0 and 1 to be used in alpha antialiasing calculation
 
-        if (err <= 0)
-        {
-            y++;
-            err += dy;
-            dy += 2;
-        }
-        
-        if (err > 0)
-        {
-            x--;
-            dx += 2;
-            err += dx - (radius << 1);
-        }
+        //Draw each one of the 8 semiquadrants of the circle
+        drawPixel(c, color, {p.x + x, p.y + y});
+        drawPixel(c, color, {p.x + y, p.y + x});
+        drawPixel(c, color, {p.x - y, p.y + x});
+        drawPixel(c, color, {p.x - x, p.y + y});
+        drawPixel(c, color, {p.x - x, p.y - y});
+        drawPixel(c, color, {p.x - y, p.y - x});
+        drawPixel(c, color, {p.x + y, p.y - x});
+        drawPixel(c, color, {p.x + x, p.y - y});
+
+        //Outer antialising
+        drawPixel(c, {color.R, color.G, color.B, (unsigned char)(color.A * fx)}, {p.x + x + 1, p.y + y});
+        drawPixel(c, {color.R, color.G, color.B, (unsigned char)(color.A * fx)}, {p.x + y, p.y + x + 1});
+        drawPixel(c, {color.R, color.G, color.B, (unsigned char)(color.A * fx)}, {p.x - y, p.y + x + 1});
+        drawPixel(c, {color.R, color.G, color.B, (unsigned char)(color.A * fx)}, {p.x - x - 1, p.y + y});
+        drawPixel(c, {color.R, color.G, color.B, (unsigned char)(color.A * fx)}, {p.x - x - 1, p.y - y});
+        drawPixel(c, {color.R, color.G, color.B, (unsigned char)(color.A * fx)}, {p.x - y, p.y - x - 1});
+        drawPixel(c, {color.R, color.G, color.B, (unsigned char)(color.A * fx)}, {p.x + y, p.y - x - 1});
+        drawPixel(c, {color.R, color.G, color.B, (unsigned char)(color.A * fx)}, {p.x + x + 1, p.y - y});
+
+        //Inner antialising
+        drawPixel(c, {color.R, color.G, color.B, (unsigned char)(color.A * (1 - fx))}, {p.x + x - 1, p.y + y});
+        drawPixel(c, {color.R, color.G, color.B, (unsigned char)(color.A * (1 - fx))}, {p.x + y, p.y + x - 1});
+        drawPixel(c, {color.R, color.G, color.B, (unsigned char)(color.A * (1 - fx))}, {p.x - y, p.y + x - 1});
+        drawPixel(c, {color.R, color.G, color.B, (unsigned char)(color.A * (1 - fx))}, {p.x - x + 1, p.y + y});
+        drawPixel(c, {color.R, color.G, color.B, (unsigned char)(color.A * (1 - fx))}, {p.x - x + 1, p.y - y});
+        drawPixel(c, {color.R, color.G, color.B, (unsigned char)(color.A * (1 - fx))}, {p.x - y, p.y - x + 1});
+        drawPixel(c, {color.R, color.G, color.B, (unsigned char)(color.A * (1 - fx))}, {p.x + y, p.y - x + 1});
+        drawPixel(c, {color.R, color.G, color.B, (unsigned char)(color.A * (1 - fx))}, {p.x + x - 1, p.y - y});
     }
 }
 

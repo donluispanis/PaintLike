@@ -123,8 +123,8 @@ bool PaintLike::InitEngine(const int w, const int h)
     U::drawRectangle(*currentCanvas, {200, 300},{500, 600}, 10, 0, {0,255,0,125}, {0,255,0,125});
     U::drawRectangle(*currentCanvas, {800, 800},{5000, 6000}, 100, 0, {0,255,0,255}, {255,0,0,255});
 
-    for(int i = 1; i < 400; i+=3){
-        U::drawCircle(*currentCanvas, {1200, 450}, i, 10, {255,255,255,255}, {255,255,255,255});
+    for(int i = 1; i < 400; i+=20){
+        U::drawCircleOutline(*currentCanvas, {1200, 450}, i, {255,255,255,255});
     }
 
     //U::drawCircle(*currentCanvas, {1200, 450}, 1, 10, {255,255,255,255}, {255,255,255,255});

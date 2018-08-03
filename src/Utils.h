@@ -30,6 +30,8 @@ struct point_t
 void drawRectangle(Canvas &c, point_t p1, point_t p2, const int borderSize, const int borderRadius, const color_t innerC, const color_t outerC);
 //Draws a circle with antialising
 void drawCircle(Canvas &c, point_t p, const int radius, const int borderSize, const color_t innerC, const color_t outerC);
+//Draws only a circle outline
+void drawCircleOutline(Canvas &c, point_t p, const int radius, const color_t color);
 void drawShape(Canvas &c, std::vector<std::pair<point_t, point_t>> coords, const int borderSize, const color_t innerC, const color_t outerC);
 void drawLine(Canvas &c, point_t p1, point_t p2, const int borderSize, const color_t color);
 void drawSpline(Canvas &c, point_t p1, point_t p2, point_t p3, const int borderSize, const color_t color);
