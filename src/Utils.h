@@ -29,5 +29,6 @@ void drawSpline(Canvas& c, M::point_t p1, M::point_t p2, M::point_t p3, const in
 void drawGradient(Canvas& c, M::point_t p1, M::point_t p2, const M::point_t dirVec, const color_t innerC, const color_t outerC);
 
 void clampPoint(M::point_t& p, int w, int h);
+void paintWithColorBlending(unsigned char* cData, const color_t c);
 
 } // namespace U

@@ -119,8 +119,8 @@ bool PaintLike::InitEngine(const int w, const int h)
 
     //To remove later on
     U::drawRectangle(*currentCanvas, {100, 100},{400, 400}, 10, 0, {255,0,0,125}, {255,0,0,125});
-    U::drawRectangle(*currentCanvas, {200, 300},{500, 600}, 10, 0, {0,255,0,125}, {0,255,0,125});
     U::drawRectangle(*currentCanvas, {600, 100},{300, 400}, 10, 0, {0,0,255,125}, {0,0,255,125});
+    U::drawRectangle(*currentCanvas, {200, 300},{500, 600}, 10, 0, {0,255,0,125}, {0,255,0,125});
     DrawAllCanvas();
 
     return true;

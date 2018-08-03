@@ -3,6 +3,7 @@
 
 #include <algorithm>
 
+#include <iostream>
 //Draws a rectangle given some parameters
 void U::drawRectangle(Canvas &c, M::point_t p1, M::point_t p2, const int borderSize, const int borderRadius, const color_t innerC, const color_t outerC)
 {
@@ -43,22 +44,12 @@ void U::drawRectangle(Canvas &c, M::point_t p1, M::point_t p2, const int borderS
             //Draw border
             if (x < minX + borderSize || y < minY + borderSize || x > maxX - borderSize - 1 || y > maxY - borderSize - 1)
             {
-                float opacity = cData[pos + 3] * 0.00392157f; //Same as dividing between 255
-
-                cData[pos] = std::min(255, (int)(outerC.R + cData[pos] * opacity));
-                cData[pos + 1] = std::min(255, (int)(outerC.G + cData[pos + 1] * opacity));
-                cData[pos + 2] = std::min(255, (int)(outerC.B + cData[pos + 2] * opacity));
-                cData[pos + 3] = std::min(255, outerC.A + cData[pos + 3]);
+                paintWithColorBlending(cData + pos, outerC);
             }
             //Draw insides
             else
             {
-                float opacity = cData[pos + 3] * 0.00392157f; //Same as dividing between 255
-                
-                cData[pos] = std::min(255, (int)(innerC.R + cData[pos] * opacity));
-                cData[pos + 1] = std::min(255, (int)(innerC.G + cData[pos + 1] * opacity));
-                cData[pos + 2] = std::min(255, (int)(innerC.B + cData[pos + 2] * opacity));
-                cData[pos + 3] = std::min(255, innerC.A + cData[pos + 3]);
+                paintWithColorBlending(cData + pos, innerC);
             }
         }
     }
@@ -85,4 +76,20 @@ void U::clampPoint(M::point_t &p, int w, int h)
         p.x = w - 1;
     if (p.y >= h)
         p.y = h - 1;
+}
+//Paint the correspondent pixel with the corresponding alpha blending
+//Formula found in https://en.wikipedia.org/wiki/Alpha_compositing
+void U::paintWithColorBlending(unsigned char *cData, const color_t c)
+{
+    float srcAlpha = c.A * 0.00392157f;      //Same as dividing between 255
+    float dstAlpha = cData[3] * 0.00392157f; //Same as dividing between 255
+
+    float outAlpha = srcAlpha + dstAlpha * (1 - srcAlpha);
+
+    float auxAlpha = dstAlpha * (1 - srcAlpha); //Auxn variable for efficiency
+
+    cData[0] = (int)((c.R * srcAlpha + cData[0] * auxAlpha) / outAlpha);
+    cData[1] = (int)((c.G * srcAlpha + cData[1] * auxAlpha) / outAlpha);
+    cData[2] = (int)((c.B * srcAlpha + cData[2] * auxAlpha) / outAlpha);
+    cData[3] = (int)(outAlpha * 255);
 }
