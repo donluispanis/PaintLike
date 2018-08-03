@@ -20,31 +20,45 @@ void U::drawRectangle(Canvas &c, M::point_t p1, M::point_t p2, const int borderS
     clampPoint(p1, cW, cH);
     clampPoint(p2, cW, cH);
 
-    int minX = std::max(0, p1.y - (borderSize / 2 + borderSize % 2));
-    int minY = std::max(0, p1.y - (borderSize / 2 + borderSize % 2));
-    int maxX = std::min(cW, p2.x + (borderSize / 2 + borderSize % 2));
-    int maxY = std::min(cH, p2.y + (borderSize / 2 + borderSize % 2));
+    //Order points in order to get left up and right down corner
+    M::point_t minP, maxP;
+    minP.x = std::min(p1.x, p2.x);
+    minP.y = std::min(p1.y, p2.y);
+    maxP.x = std::max(p1.x, p2.x);
+    maxP.y = std::max(p1.y, p2.y);
 
-    //Draw border
+    //Clamp again point values taking border size in account, and invert Y
+    int minX = std::max(0, minP.x - (borderSize / 2 + borderSize % 2));
+    int minY = std::max(0, cH - maxP.y - (borderSize / 2 + borderSize % 2));
+    int maxX = std::min(cW, maxP.x + (borderSize / 2 + borderSize % 2));
+    int maxY = std::min(cH, cH - minP.y + (borderSize / 2 + borderSize % 2));
+
+    //Draw rectangle
     for (int y = minY; y < maxY; y++)
     {
         for (int x = minX; x < maxX; x++)
         {
             int pos = (y * cW + x) * 4;
 
+            //Draw border
             if (x < minX + borderSize || y < minY + borderSize || x > maxX - borderSize - 1 || y > maxY - borderSize - 1)
             {
-                cData[pos] = outerC.R;
-                cData[pos + 1] = outerC.G;
-                cData[pos + 2] = outerC.B;
-                cData[pos + 3] = outerC.A;
+                float opacity = cData[pos + 3] * 0.00392157f; //Same as dividing between 255
+
+                cData[pos] = std::min(255, (int)(outerC.R + cData[pos] * opacity));
+                cData[pos + 1] = std::min(255, (int)(outerC.G + cData[pos + 1] * opacity));
+                cData[pos + 2] = std::min(255, (int)(outerC.B + cData[pos + 2] * opacity));
+                cData[pos + 3] = std::min(255, outerC.A + cData[pos + 3]);
             }
+            //Draw insides
             else
             {
-                cData[pos] = innerC.R;
-                cData[pos + 1] = innerC.G;
-                cData[pos + 2] = innerC.B;
-                cData[pos + 3] = innerC.A;
+                float opacity = cData[pos + 3] * 0.00392157f; //Same as dividing between 255
+                
+                cData[pos] = std::min(255, (int)(innerC.R + cData[pos] * opacity));
+                cData[pos + 1] = std::min(255, (int)(innerC.G + cData[pos + 1] * opacity));
+                cData[pos + 2] = std::min(255, (int)(innerC.B + cData[pos + 2] * opacity));
+                cData[pos + 3] = std::min(255, innerC.A + cData[pos + 3]);
             }
         }
     }
